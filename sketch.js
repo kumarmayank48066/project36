@@ -1,120 +1,120 @@
-var dog,sadDog,happyDog, database;
-var foodS,foodStock;
-var fedTime,lastFed;
-var feed,addFood;
-var foodObj;
+var balloon,balloonImage1,balloonImage2;
+var database;
+var height;
 
 function preload(){
-sadDog=loadImage("Dog.png");
-happyDog=loadImage("happy dog.png");
-}
-
-function setup() {
-  database=firebase.database();
-  createCanvas(1000,400);
-
-  foodObj = new Food();
-
-  foodStock=database.ref('Food');
-  foodStock.on("value",readStock);
-  
-  dog=createSprite(800,200,150,150);
-  dog.addImage(sadDog);
-  dog.scale=0.15;
-  
-  //Uncomment the correct code to create 
-  feed=createButton("Feed the dog");
-  feed.position(700,95);
-  
- // feed=createbutton("Feed the dog");
- // feed.position(700,95);
-  
-  //feed=createButton("Feed the dog");
- // feed.position(70,950);
-  
-  //feed=createButton("Feed the dog");
-  //feed.Position(700,95);
-
-  //Uncomment the correct code to call FeedDog() using mousePressed
- // feed.Pressed(feedDog);
- // feed.mousePress(feedDog);
- // feed.mousePressed(feedDog);
-  feed.mousePressed(addfoods);
- 
-  addFood=createButton("Add Food");
-  addFood.position(800,95);
-  addFood.mousePressed(addFoods);
-
-}
-
-function draw() {
-  background(46,139,87);
-  foodObj.display();
-
-  fedTime=database.ref('FeedTime');
-  fedTime.on("value",function(data){
-    lastFed=data.val();
-  });
- 
-  fill(255,255,254);
-  textSize(15);
-
-  if(lastFed>=12){
-    text("Last Feed : "+ lastFed%12 + " PM", 350,30);
-   }else if(lastFed==0){
-     text("Last Feed : 12 AM",350,30);
-   }else{
-     text("Last Feed : "+ lastFed + " AM", 350,30);
-   }
-  
-  drawSprites();
-}
-
-//function to read food Stock
-function readStock(data){
-  foodS=data.val();
-  foodObj.updateFoodStock(foodS);
-}
-
-
-//function to update food stock and last fed time
-function feedDog(){
-  dog.addImage(happyDog);
-  
-  var food_stock_val = foodObj.getFoodStock();
-  if(food_stock_val <= 0){
-      foodObj.updateFoodStock(food_stock_val *0);
-  }else{
-      foodObj.updateFoodStock(food_stock_val -1);
+   bg =loadImage("Images/cityImage.png");
+   balloonImage1=loadAnimation("Images/HotAirBallon01.png");
+   balloonImage2=loadAnimation("Images/HotAirBallon01.png","Images/HotAirBallon01.png",
+   "Images/HotAirBallon01.png","Images/HotAirBallon02.png","Images/HotAirBallon02.png",
+   "Images/HotAirBallon02.png","Images/HotAirBallon03.png","Images/HotAirBallon03.png","Images/HotAirBallon03.png");
   }
-  
-  //Uncomment correct code block to update food quantity and fed timing
-  database.ref('/').OnUpdate({
-    Food:foodObj.getFoodStock(),
-    FeedTime:hour()
-  })
-  
- /* database.ref('/').Update({
-    Food:foodObj.getFoodStock(),
-    FeedTime:hour()
-  })
-    
-  database.ref('/').update({
-    Food:foodObj.getFoodStock(),
-    FeedTime:hour()
-  })
-   
-  database.ref('/').update({
-    Food:foodObj.getFoodStock,
-    FeedTime:hour()
-  })*/
-  
+
+//Function to set initial environment
+function setup() {
+
+   database=firebase.database();
+
+  createCanvas(1500,700);
+
+  balloon=createSprite(250,650,150,150);
+  balloon.addAnimation("hotAirBalloon",balloonImage1);
+  balloon.scale=0.5;
+
+  var balloonHeight=database.ref('balloon/height');
+  balloonHeight.on("value",readHeight, showError);
+
+
+
+  textSize(20); 
 }
 
-//function to add food stock
-function addFoods(){
-  foodS++;
-  database.ref('/').update({
-    Food:foodS
-  })
+// function to display UI
+function draw() {
+  background(bg);
+
+  if(keyDown(LEFT_ARROW)){
+    updateHeight(-10,0);
+    balloon.addAnimation("hotAirBalloon",balloonImage2);
+  }
+  else if(keyDown(RIGHT_ARROW)){
+    updateHeight(10,0);
+    balloon.addAnimation("hotAirBalloon",balloonImage2);
+  }
+  else if(keyDown(UP_ARROW)){
+    updateHeight(0,-10);
+    balloon.addAnimation("hotAirBalloon",balloonImage2);
+    balloon.scale=balloon.scale -0.005;
+  }
+  else if(keyDown(DOWN_ARROW)){
+    updateHeight(0,+10);
+    balloon.addAnimation("hotAirBalloon",balloonImage2);
+    balloon.scale=balloon.scale+0.005;
+  }
+
+  drawSprites();
+  fill(0);
+  stroke("white");
+  textSize(25);
+  text("**Use arrow keys to move Hot Air Balloon!",40,40);
+}
+
+//CHOOSE THE CORRECT UPDATEHEIGHT FUNCTION
+// function updateHeight(x,y){
+//   database.ref('balloon/height').set({
+//     'x': height.x ,
+//     'y': height.y 
+//   })
+// }
+
+// function updateHeight(x,y){
+//   database.ref('balloon/height')({
+//     'x': height.x + x ,
+//     'y': height.y + y
+//   })
+// }
+
+
+// function updateHeight(x,y){
+//   database.ref('balloon/height').set({
+//     'x': height.x + x ,
+//     'y': height.y + y
+//   })
+// }
+
+
+// function updateHeight(x,y){
+//   database.ref().set({
+//     'x': height.x + x ,
+//     'y': height.y + y
+//   })
+// }
+
+
+
+
+//CHOOSE THE CORRECT READHEIGHT FUNCTION
+// function readHeight(data){
+//   balloon.x = height.x;
+//   balloon.y = height.y;
+// }
+
+// function readHeight(data){
+//   height = data.val();
+//   balloon.x = height.x;
+//   balloon.y = height.y;
+// }
+
+// function readHeight(data){
+//   height = data.val();
+// }
+
+// function readHeight(){
+//   height = val();
+//   balloon.x = height.x;
+//   balloon.y = height.y;
+// }
+
+function showError(){
+  console.log("Error in writing to the database");
 }
